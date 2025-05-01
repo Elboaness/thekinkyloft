@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import styled from 'styled-components';
@@ -166,25 +166,40 @@ const tagColors = {
 const Timeline = () => {
   const [itemsInView, setItemsInView] = useState({});
   
-  const eventRefs = events.map((event, index) => {
-    const [ref, inView] = useInView({
-      triggerOnce: true,
-      threshold: 0.2
+  // Create individual ref hooks for each event at the top level
+  const [ref0, inView0] = useInView({ triggerOnce: true, threshold: 0.2 });
+  const [ref1, inView1] = useInView({ triggerOnce: true, threshold: 0.2 });
+  const [ref2, inView2] = useInView({ triggerOnce: true, threshold: 0.2 });
+  const [ref3, inView3] = useInView({ triggerOnce: true, threshold: 0.2 });
+  const [ref4, inView4] = useInView({ triggerOnce: true, threshold: 0.2 });
+  const [ref5, inView5] = useInView({ triggerOnce: true, threshold: 0.2 });
+  
+  // Create an array of refs and inView values that we can map over
+  const refs = [
+    { ref: ref0, inView: inView0 },
+    { ref: ref1, inView: inView1 },
+    { ref: ref2, inView: inView2 },
+    { ref: ref3, inView: inView3 },
+    { ref: ref4, inView: inView4 },
+    { ref: ref5, inView: inView5 },
+  ];
+  
+  // Update itemsInView when any of the inView values change
+  useEffect(() => {
+    const newItemsInView = {};
+    [inView0, inView1, inView2, inView3, inView4, inView5].forEach((inView, index) => {
+      if (inView) {
+        newItemsInView[index] = true;
+      }
     });
     
-    useEffect(() => {
-      if (inView) {
-        setItemsInView(prev => ({ ...prev, [index]: true }));
-      }
-    }, [inView, index]);
-    
-    return { ref, inView, index };
-  });
+    setItemsInView(prev => ({ ...prev, ...newItemsInView }));
+  }, [inView0, inView1, inView2, inView3, inView4, inView5]);
 
   return (
     <TimelineContainer>
       {events.map((event, index) => {
-        const { ref, inView } = eventRefs[index];
+        const { ref } = refs[index];
         
         return (
           <TimelineItem 
